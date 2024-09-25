@@ -167,6 +167,19 @@ contract VotingContract {
         );
         proposal.announced = true;
     }
+
+    function getVotes(uint256 proposalId) public view returns (Vote[] memory) {
+        uint256 voterCount = proposals[proposalId].voterCount;
+        Vote[] memory votes = new Vote[](voterCount);
+        for (uint256 i = 0; i < voterCount; i++) {
+            votes[i] = Vote(
+                voters[proposalId][i],
+                receipts[proposalId][voters[proposalId][i]].isSupport,
+                receipts[proposalId][voters[proposalId][i]].votes
+            );
+        }
+        return votes;
+    }
 }
 
 library SafeMath {
