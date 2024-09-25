@@ -152,6 +152,21 @@ contract VotingContract {
         receipts[proposalId][msg.sender] = receipt;
         emit VoteCast(msg.sender, proposalId, vote);
     }
+
+    function proposalResult(uint256 proposalId) external{
+        require(proposalCount >= proposalId && proposalId > 0,"declareResult: invalid proposal id");
+
+        Proposal storage proposal = proposals[proposalId];
+        require(block.timestamp > proposal.deadLine,"declareResult: DeadLine has not yet passed");
+
+        ProposalState _ProposalState = stateOfTheProposal(proposalId);
+        require(_ProposalState != ProposalState.CANCELED, "declareResult: Prososal is canceled");
+        require(
+            _ProposalState != ProposalState.ACCEPTED &&_ProposalState != ProposalState.REJECTED,
+            "declareResult: Result already announced"
+        );
+        proposal.announced = true;
+    }
 }
 
 library SafeMath {
