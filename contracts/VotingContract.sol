@@ -98,6 +98,10 @@ contract VotingContract {
             newProposal.dateOfCreation
         );
     }
+    
+    function getReceipt(uint256 proposalId, address voter) external view returns (VoteReceipt memory) {
+        return receipts[proposalId][voter];
+    }
 }
 
 library SafeMath {
