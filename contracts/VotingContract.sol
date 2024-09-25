@@ -71,6 +71,33 @@ contract VotingContract {
 
     /// @notice An event emitted when a vote has been cast on a proposal
     event VoteCast(address voter, uint256 proposalId, bool support);
+
+    function createProposal(string memory proposalTitle, string memory proposalDescription) external {
+        proposalCount++;
+        Proposal memory newProposal = Proposal({
+            id: proposalCount,
+            proposer: msg.sender,
+            favorVotes: 0,
+            againstVotes: 0,
+            canceled: false,
+            announced: false,
+            voterCount: 0,
+            description: proposalDescription,
+            title: proposalTitle,
+            dateOfCreation: block.timestamp,
+            deadLine: block.timestamp + 3 minutes,
+            res: ProposalState.ACTIVE
+        });
+
+        proposals[newProposal.id] = newProposal;
+        emit ProposalCreated(
+            newProposal.id,
+            msg.sender,
+            proposalDescription,
+            proposalTitle,
+            newProposal.dateOfCreation
+        );
+    }
 }
 
 library SafeMath {
