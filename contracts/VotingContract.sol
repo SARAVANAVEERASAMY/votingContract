@@ -125,6 +125,33 @@ contract VotingContract {
             return ProposalState.ACTIVE;
         }
     }
+
+    function voteToProposal(uint256 proposalId, bool vote) external {
+        require(
+            proposalCount >= proposalId && proposalId > 0,
+            "voteToProposal: invalid proposal id"
+        );
+        Proposal storage proposal = proposals[proposalId];
+        require(
+            block.timestamp <= proposal.deadLine,
+            "voteToProposal: Voting period has ended"
+        );
+        VoteReceipt storage receipt = receipts[proposalId][msg.sender];
+        require((receipt.isVoted == false), "voteToProposal: You can't vote again");
+
+        receipt.isVoted = true;
+        receipt.isSupport = vote;
+        receipt.votes = 1;
+        voters[proposalId][proposal.voterCount] = msg.sender;
+        proposal.voterCount++;
+        if (vote) {
+            proposal.favorVotes = proposal.favorVotes.add(1);
+        } else {
+            proposal.againstVotes = proposal.againstVotes.add(1);
+        }
+        receipts[proposalId][msg.sender] = receipt;
+        emit VoteCast(msg.sender, proposalId, vote);
+    }
 }
 
 library SafeMath {
