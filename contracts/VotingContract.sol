@@ -98,9 +98,32 @@ contract VotingContract {
             newProposal.dateOfCreation
         );
     }
-    
+
     function getReceipt(uint256 proposalId, address voter) external view returns (VoteReceipt memory) {
         return receipts[proposalId][voter];
+    }
+
+    function stateOfTheProposal(uint256 proposalId) public returns (ProposalState) {
+        uint256 totalAmountOfPassVoters;
+        uint256 totalAmountOfRejectVoters;
+        require(
+            proposalCount >= proposalId && proposalId > 0,
+            "stateOfTheProposal: invalid proposal id"
+        );
+        Proposal storage proposal = proposals[proposalId];
+        if (proposal.canceled) {
+            return ProposalState.CANCELED;
+        } else if (proposal.announced) {
+            if (totalAmountOfPassVoters > totalAmountOfRejectVoters) {
+                proposal.res = ProposalState.ACCEPTED;
+                return ProposalState.ACCEPTED;
+            } else {
+                proposal.res = ProposalState.REJECTED;
+                return ProposalState.REJECTED;
+            }
+        } else {
+            return ProposalState.ACTIVE;
+        }
     }
 }
 
