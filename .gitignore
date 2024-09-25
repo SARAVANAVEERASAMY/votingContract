@@ -1,0 +1,4 @@
+/node_modules
+/build
+.nemonic.secret
+package-lock.json
